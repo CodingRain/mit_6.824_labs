@@ -18,16 +18,24 @@ package raft
 //
 
 import (
-	//	"bytes"
+	//  "bytes"
+	"fmt"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	//	"6.5840/labgob"
+	//  "6.5840/labgob"
 	"6.5840/labrpc"
 )
 
+type State int
+
+const (
+	STATE_LEADER State = iota
+	STATE_CANDIDATE
+	STATE_FOLLOWER
+)
 
 // as each Raft peer becomes aware that successive log entries are
 // committed, the peer should send an ApplyMsg to the service (or
@@ -62,16 +70,32 @@ type Raft struct {
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
 
+	// persistent state on all servers
+	currentTerm int // latest term server has seen (initialized to 0 on first boot, increases monotonically)
+	votedFor    int // candidateId that received vote in current term (or null if none)
+	// TODO change to log entry struct
+	log []int // log entries; each entry contains command for state machine, and term when entry was received by leader (first index is 1)
+
+	// volatile state on all servers
+	commitIndex           int      // index of highest log entry known to be committed
+	lastApplied           int      // index of highest log entry applied to state machine
+	state                 State    // TODO: paper do not mention this, is it necessary or not?
+	stateChangeToFollower chan int // channel contains term when follower state is changed to follower
+	stateMutex            sync.Mutex
+
+	// volatile state on leaders (reinitialized after election)
+	nextIndex  []int // for each server, index of the next log entry to send to that server
+	matchIndex []int // for each server, index of highest log entry known to be replicated on server
+
 }
 
 // return currentTerm and whether this server
 // believes it is the leader.
 func (rf *Raft) GetState() (int, bool) {
-
-	var term int
-	var isleader bool
 	// Your code here (2A).
-	return term, isleader
+	rf.stateMutex.Lock()
+	defer rf.stateMutex.Unlock()
+	return rf.currentTerm, rf.state == STATE_LEADER
 }
 
 // save Raft's persistent state to stable storage,
@@ -91,7 +115,6 @@ func (rf *Raft) persist() {
 	// raftstate := w.Bytes()
 	// rf.persister.Save(raftstate, nil)
 }
-
 
 // restore previously persisted state.
 func (rf *Raft) readPersist(data []byte) {
@@ -113,7 +136,6 @@ func (rf *Raft) readPersist(data []byte) {
 	// }
 }
 
-
 // the service says it has created a snapshot that has
 // all info up to and including index. this means the
 // service no longer needs the log through (and including)
@@ -123,22 +145,61 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 
 }
 
-
 // example RequestVote RPC arguments structure.
 // field names must start with capital letters!
 type RequestVoteArgs struct {
 	// Your data here (2A, 2B).
+	Term         int // candidate's term
+	CandidateId  int // candidate requesting vote
+	LastLogIndex int // index of candidate's last log entry
+	LastLogTerm  int // term of candidate's last log entry
+
 }
 
 // example RequestVote RPC reply structure.
 // field names must start with capital letters!
 type RequestVoteReply struct {
 	// Your data here (2A).
+	Term        int  // currentTerm, for candidate to update itself
+	VoteGranted bool // true means candidate received vote
 }
 
 // example RequestVote RPC handler.
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
+	// 1. Reply false if candidate's term < currentTerm (§5.1)
+	rf.stateMutex.Lock()
+	if args.Term < rf.currentTerm {
+		reply.Term = rf.currentTerm
+		reply.VoteGranted = false
+		rf.stateMutex.Unlock()
+		return
+	}
+
+	// 2. Grant vote, and change to follower if candidate's term > currentTerm
+	if args.Term > rf.currentTerm {
+		reply.Term = rf.currentTerm
+		reply.VoteGranted = true
+		rf.stateMutex.Unlock()
+		rf.stateChangeToFollower <- args.Term
+		return
+	}
+
+	// 3. If votedFor is null or candidateId, and candidate's log is at least as up-to-date as receiver's log, grant vote (§5.2, §5.4)
+	if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
+		// (args.LastLogTerm > rf.log[len(rf.log)-1] || (args.LastLogTerm == rf.log[len(rf.log)-1] && args.LastLogIndex >= len(rf.log)-1)) {
+		rf.votedFor = args.CandidateId
+		reply.Term = rf.currentTerm
+		reply.VoteGranted = true
+		rf.stateMutex.Unlock()
+		return
+	}
+
+	// 4. Reply false
+	reply.Term = rf.currentTerm
+	reply.VoteGranted = false
+	rf.stateMutex.Unlock()
+	return
 }
 
 // example code to send a RequestVote RPC to a server.
@@ -169,10 +230,49 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 // that the caller passes the address of the reply struct with &, not
 // the struct itself.
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
+	// do this have tiemout?
 	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
 	return ok
 }
 
+type AppendEntriesArgs struct {
+	Term         int   // leader's term
+	LeaderId     int   // so follower can redirect clients
+	PrevLogIndex int   // index of log entry immediately preceding new ones
+	PrevLogTerm  int   // term of prevLogIndex entry
+	Entries      []int // log entries to store (empty for heartbeat; may send more than one for efficiency)
+	LeaderCommit int   // leader's commitIndex
+}
+
+type AppendEntriesReply struct {
+	Term    int  // currentTerm, for leader to update itself
+	Success bool // true if follower contained entry matching prevLogIndex and prevLogTerm
+}
+
+func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
+	ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
+	return ok
+}
+
+func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply) {
+	// what if args.term < rf.currentTerm?
+	// 1. Reply false if term < currentTerm (§5.1)
+	// fmt.Printf("[%d]append entries started\n", rf.me)
+	rf.stateMutex.Lock()
+	currentTerm := rf.currentTerm
+	if args.Term < currentTerm {
+		reply.Term = currentTerm
+		reply.Success = false
+		rf.stateMutex.Unlock()
+		return
+	}
+	rf.currentTerm = args.Term
+	rf.votedFor = -1
+	rf.stateMutex.Unlock()
+	rf.stateChangeToFollower <- args.Term
+	// fmt.Printf("[%d]append entries finished\n", rf.me)
+
+}
 
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
@@ -192,7 +292,6 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := true
 
 	// Your code here (2B).
-
 
 	return index, term, isLeader
 }
@@ -218,15 +317,180 @@ func (rf *Raft) killed() bool {
 
 func (rf *Raft) ticker() {
 	for rf.killed() == false {
-
+		rf.stateMutex.Lock()
+		state := rf.state
+		rf.stateMutex.Unlock()
 		// Your code here (2A)
-		// Check if a leader election should be started.
+		if state == STATE_LEADER {
+			rf.leaderLoop()
+			// what's the interval between heartbeats?
+			ms := 50 + (rand.Int63() % 50)
+			time.Sleep(time.Duration(ms) * time.Millisecond)
+		} else if state == STATE_FOLLOWER {
+			rf.followerLoop()
+		} else if state == STATE_CANDIDATE {
+			rf.candidateLoop()
+		}
+	}
+}
 
+func (rf *Raft) leaderLoop() {
+	// 1. leader state: send heartbeats to all peers through AppendEntries RPC
+	fmt.Printf("[%d]become leader\n", rf.me)
+	for {
+		var wg sync.WaitGroup
+		ch := make(chan AppendEntriesReply, len(rf.peers)-1)
+		for i := 0; i < len(rf.peers); i++ {
+			if i == rf.me {
+				continue
+			}
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				var args AppendEntriesArgs
+				args.Term = rf.currentTerm
+				args.LeaderId = rf.me
+				// TODO add other fields
+				var reply AppendEntriesReply
+				rf.sendAppendEntries(i, &args, &reply)
+				ch <- reply
 
-		// pause for a random amount of time between 50 and 350
-		// milliseconds.
-		ms := 50 + (rand.Int63() % 300)
+			}(i)
+		}
+		go func() {
+			wg.Wait()
+			close(ch)
+		}()
+		received := 0
+		for received < len(rf.peers)-1 {
+			select {
+			case reply := <-ch:
+				received++
+				if reply.Term > rf.currentTerm {
+					// CHANGE STATE: leader -> follower
+					fmt.Printf("[%d]leader's term is stale, change to follower\n", rf.me)
+					rf.stateMutex.Lock()
+					rf.state = STATE_FOLLOWER
+					rf.currentTerm = reply.Term
+					rf.votedFor = -1
+					rf.stateMutex.Unlock()
+					return
+				}
+			case <-rf.stateChangeToFollower:
+				// CHANGE STATE: leader -> follower
+				// fmt.Printf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
+				rf.stateMutex.Lock()
+				rf.state = STATE_FOLLOWER
+				rf.votedFor = -1
+				rf.stateMutex.Unlock()
+				return
+			}
+		}
+
+		// what's the interval between heartbeats?
+		ms := 50
 		time.Sleep(time.Duration(ms) * time.Millisecond)
+	}
+}
+
+func (rf *Raft) followerLoop() {
+	fmt.Printf("[%d]become follower\n", rf.me)
+	// 2. follower state: respond to RPCs from candidates and leaders, wait for election timeout
+loop:
+	for {
+		ms := 50 + (rand.Int63() % 300)
+		select {
+		case <-time.After(time.Duration(ms) * time.Millisecond):
+			// change to candidate
+			fmt.Printf("[%d]election timeout, change state to candidate, start a new election\n", rf.me)
+			rf.stateMutex.Lock()
+			rf.state = STATE_CANDIDATE
+			rf.votedFor = -1
+			rf.stateMutex.Unlock()
+			break loop
+		case <-rf.stateChangeToFollower:
+			// fmt.Printf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
+		}
+	}
+}
+
+func (rf *Raft) candidateLoop() {
+	fmt.Printf("[%d]become candidate\n", rf.me)
+	// 3. candidate state: start an election and wait for votes
+loop:
+	for {
+		rf.stateMutex.Lock()
+		rf.currentTerm++
+		rf.votedFor = rf.me
+		rf.stateMutex.Unlock()
+		var wg sync.WaitGroup
+		ch := make(chan RequestVoteReply, len(rf.peers)-1)
+		for i := 0; i < len(rf.peers); i++ {
+			if i == rf.me {
+				continue
+			}
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				var args RequestVoteArgs
+				args.Term = rf.currentTerm
+				args.CandidateId = rf.me
+				var reply RequestVoteReply
+				rf.sendRequestVote(i, &args, &reply)
+				ch <- reply
+			}(i)
+		}
+		go func() {
+			wg.Wait()
+			close(ch)
+		}()
+		votes := 1
+		ms := 50 + (rand.Int63() % 300)
+		received := 0
+		for received < len(rf.peers)-1 {
+			select {
+			// receive supporter
+			case reply := <-ch:
+				received++
+				if reply.Term > rf.currentTerm {
+					// STATE CHANGE: candidate -> follower
+					fmt.Printf("[%d]candidate's term is stale, change to follower\n", rf.me)
+					rf.stateMutex.Lock()
+					rf.state = STATE_FOLLOWER
+					rf.currentTerm = reply.Term
+					rf.votedFor = -1
+					rf.stateMutex.Unlock()
+					return
+				} else if reply.VoteGranted {
+					votes++
+					if votes >= (len(rf.peers)+1)/2 {
+						// STATE CHANGE: candidate -> leader
+						fmt.Printf("[%d]win the election, get %d votes, total %d peers, become leader\n", rf.me, votes, len(rf.peers))
+						rf.stateMutex.Lock()
+						rf.state = STATE_LEADER
+						rf.votedFor = -1
+						rf.stateMutex.Unlock()
+						return
+					}
+				}
+			// receive other leader's authority
+			case newTerm := <-rf.stateChangeToFollower:
+				// STATE CHANGE: candidate -> follower
+				// fmt.Printf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
+				rf.stateMutex.Lock()
+				rf.state = STATE_FOLLOWER
+				rf.votedFor = -1
+				rf.currentTerm = newTerm
+				rf.stateMutex.Unlock()
+				return
+			// election timeout, start election again
+			case <-time.After(time.Duration(ms) * time.Millisecond):
+				fmt.Printf("[%d]election timeout, start a new election, %v\n", rf.me, time.Now().UnixMilli())
+				continue loop
+			}
+		}
+		fmt.Printf("[%d]lose the election, get %d votes, start a new election\n", rf.me, votes)
+
 	}
 }
 
@@ -247,13 +511,19 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.me = me
 
 	// Your initialization code here (2A, 2B, 2C).
+	// TODO initialize all the fields
+	// TODO move persistant state to persister
+	rf.currentTerm = 0
+	rf.votedFor = -1
+	rf.state = STATE_FOLLOWER
+	rf.stateChangeToFollower = make(chan int)
+	// 其他暂时不用管
 
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
-
 
 	return rf
 }

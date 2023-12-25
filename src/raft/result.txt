@@ -1,0 +1,1428 @@
+[0]become follower
+[1]become follower
+Test (2A): initial election ...
+[2]become follower
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 1 votes, total 3 peers, become leader
+[1]become leader
+  ... Passed --   3.0  3  120   24268    0
+[0]become follower
+[1]become follower
+[2]become follower
+Test (2A): election after network failure ...
+[2]election timeout, change state to candidate, start a new election
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]win the election, get 1 votes, total 3 peers, become leader
+[0]become leader
+[0]election timeout, change state to candidate, start a new election
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]win the election, get 1 votes, total 3 peers, become leader
+[2]become leader
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 1 votes, total 3 peers, become leader
+[1]become leader
+[2]become follower
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]win the election, get 1 votes, total 3 peers, become leader
+[2]become leader
+[1]become follower
+[0]become follower
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]election timeout, start a new election
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[1]candidate's term is stale, change to follower
+[1]become follower
+[0]election timeout, start a new election
+[0]win the election, get 1 votes, total 3 peers, become leader
+[0]become leader
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 1 votes, total 3 peers, become leader
+[1]become leader
+[0]become follower
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]win the election, get 1 votes, total 3 peers, become leader
+[0]become leader
+[2]become follower
+[1]become follower
+  ... Passed --   4.6  3  118   17958    0
+[0]become follower
+[1]become follower
+[2]become follower
+[3]become follower
+[4]become follower
+[5]become follower
+[6]become follower
+Test (2A): multiple elections ...
+[2]election timeout, change state to candidate, start a new election
+[1]election timeout, change state to candidate, start a new election
+[6]election timeout, change state to candidate, start a new election
+[6]become candidate
+[6]win the election, get 3 votes, total 7 peers, become leader
+[6]become leader
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 3 votes, total 7 peers, become leader
+[1]become leader
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[1]become follower
+[3]election timeout, start a new election
+[5]election timeout, change state to candidate, start a new election
+[5]become candidate
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]win the election, get 3 votes, total 7 peers, become leader
+[0]become leader
+[4]become follower
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 3 votes, total 7 peers, become leader
+[1]become leader
+[5]election timeout, start a new election
+[0]become follower
+[5]election timeout, start a new election
+[5]candidate's term is stale, change to follower
+[5]become follower
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[3]election timeout, start a new election
+[3]candidate's term is stale, change to follower
+[3]become follower
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]win the election, get 3 votes, total 7 peers, become leader
+[0]become leader
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[2]election timeout, start a new election
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[1]become follower
+[0]become follower
+[2]election timeout, start a new election
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[3]become follower
+[2]election timeout, start a new election
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 3 votes, total 7 peers, become leader
+[1]become leader
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[4]become follower
+[1]become follower
+[2]election timeout, start a new election
+[5]election timeout, change state to candidate, start a new election
+[5]become candidate
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[1]election timeout, start a new election
+[4]election timeout, start a new election
+[2]election timeout, start a new election
+[5]election timeout, start a new election
+[4]election timeout, start a new election
+[1]election timeout, start a new election
+[2]election timeout, start a new election
+[4]election timeout, start a new election
+[0]election timeout, start a new election
+[1]election timeout, start a new election
+[5]election timeout, start a new election
+[2]election timeout, start a new election
+[4]election timeout, start a new election
+[2]election timeout, start a new election
+[5]election timeout, start a new election
+[2]election timeout, start a new election
+[4]election timeout, start a new election
+[0]election timeout, start a new election
+[0]candidate's term is stale, change to follower
+[0]become follower
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]candidate's term is stale, change to follower
+[0]become follower
+[2]election timeout, start a new election
+[5]election timeout, start a new election
+[1]election timeout, start a new election
+[1]candidate's term is stale, change to follower
+[1]become follower
+[2]election timeout, start a new election
+[2]win the election, get 3 votes, total 7 peers, become leader
+[2]become leader
+[4]become follower
+[3]become follower
+[5]election timeout, start a new election
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[0]become follower
+[5]election timeout, start a new election
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[2]become follower
+[3]become follower
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]win the election, get 3 votes, total 7 peers, become leader
+[2]become leader
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 3 votes, total 7 peers, become leader
+[1]become leader
+[5]election timeout, start a new election
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[4]become follower
+[2]become follower
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[1]become follower
+[0]election timeout, start a new election
+[5]election timeout, start a new election
+[0]election timeout, start a new election
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[5]election timeout, start a new election
+[3]become follower
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[1]win the election, get 3 votes, total 7 peers, become leader
+[1]become leader
+[5]election timeout, start a new election
+[0]become follower
+[6]become follower
+[4]become follower
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[1]become follower
+[5]election timeout, start a new election
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[3]become follower
+[2]election timeout, start a new election
+[5]election timeout, start a new election
+[2]election timeout, start a new election
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[0]win the election, get 3 votes, total 7 peers, become leader
+[0]become leader
+[5]election timeout, start a new election
+[4]become follower
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[5]election timeout, start a new election
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[0]become follower
+[3]become follower
+[2]election timeout, start a new election
+[2]candidate's term is stale, change to follower
+[2]become follower
+[5]election timeout, start a new election
+[1]election timeout, change state to candidate, start a new election
+[1]become candidate
+[6]election timeout, change state to candidate, start a new election
+[6]become candidate
+[6]win the election, get 3 votes, total 7 peers, become leader
+[6]become leader
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]win the election, get 3 votes, total 7 peers, become leader
+[2]become leader
+[4]become follower
+[1]election timeout, start a new election
+[5]election timeout, start a new election
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[6]become follower
+[5]election timeout, start a new election
+[3]election timeout, start a new election
+[4]election timeout, change state to candidate, start a new election
+[4]become candidate
+[4]win the election, get 3 votes, total 7 peers, become leader
+[4]become leader
+[1]election timeout, start a new election
+[2]become follower
+[5]election timeout, start a new election
+[6]election timeout, change state to candidate, start a new election
+[6]become candidate
+[5]election timeout, start a new election
+[3]election timeout, start a new election
+[3]candidate's term is stale, change to follower
+[3]become follower
+[1]election timeout, start a new election
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[3]election timeout, change state to candidate, start a new election
+[3]become candidate
+[1]election timeout, start a new election
+[0]election timeout, start a new election
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]candidate's term is stale, change to follower
+[2]become follower
+[5]election timeout, start a new election
+[1]election timeout, start a new election
+[6]election timeout, start a new election
+[6]candidate's term is stale, change to follower
+[6]become follower
+[3]election timeout, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[1]lose the election, get 3 votes, start a new election
+[2]election timeout, change state to candidate, start a new election
+[2]become candidate
+[2]candidate's term is stale, change to follower
+[2]become follower
+[1]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[6]election timeout, change state to candidate, start a new election
+[6]become candidate
+[6]candidate's term is stale, change to follower
+[6]become follower
+[1]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[2]lose the election, get 3 votes, start a new election
+[0]election timeout, start a new election
+[0]candidate's term is stale, change to follower
+[0]become follower
+[2]lose the election, get 3 votes, start a new election
+[3]win the election, get 3 votes, total 7 peers, become leader
+[3]become leader
+[5]become follower
+[1]become follower
+[4]become follower
+[0]election timeout, change state to candidate, start a new election
+[0]become candidate
+[6]election timeout, change state to candidate, start a new election
+[6]become candidate
+[0]win the election, get 3 votes, total 7 peers, become leader
+[0]become leader
+[1]lose the election, get 6 votes, start a new election
+[6]win the election, get 3 votes, total 7 peers, become leader
+[6]become leader
+[0]leader's term is stale, change to follower
+[0]become follower
+[3]become follower
+[6]become follower
+[5]election timeout, change state to candidate, start a new election
+[5]become candidate
+[5]win the election, get 3 votes, total 7 peers, become leader
+[5]become leader
+  ... Passed --   6.0  7 7344 1154296    0
+PASS
+ok  	6.5840/raft	14.228s
