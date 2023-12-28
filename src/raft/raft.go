@@ -324,8 +324,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.LeaderCommit > rf.commitIndex {
 		lastCommitIndex := rf.commitIndex
 		rf.commitIndex = min(args.LeaderCommit, len(rf.log))
-		// TODO: think! when will there be multiple entries to be committed?
-		// TODO: will this block?
+		// will this block?
 		for idx := lastCommitIndex + 1; idx <= rf.commitIndex; idx++ {
 			rf.applyCh <- ApplyMsg{
 				CommandValid: true,
@@ -386,61 +385,49 @@ func (rf *Raft) replicateEntry(command interface{}) {
 		Pf("[%d]log=%v\n", rf.me, rf.log)
 	}()
 
-	select {
-	case <-rf.leaderCtx.Done():
-		Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
-		return
-	default:
-		var wg sync.WaitGroup
-		ch := make(chan AppendEntriesReply)
-		for i := 0; i < len(rf.peers); i++ {
-			if i == rf.me {
-				continue
-			}
-			wg.Add(1)
-
-			go func(i int) {
-				defer wg.Done()
-				select {
-				case <-rf.leaderCtx.Done():
-					Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
-					return
-				default:
-					rf.replicateEntrySingle(i, ch)
-				}
-			}(i)
+	var wg sync.WaitGroup
+	ch := make(chan AppendEntriesReply)
+	for i := 0; i < len(rf.peers); i++ {
+		if i == rf.me {
+			continue
 		}
-		go func() {
-			wg.Wait()
-			close(ch)
-		}()
-		received := 0
-		// gather response, until majority of servers append entries successfully
-		for received < len(rf.peers)-1 {
-			_ = <-ch
-			received++
+		wg.Add(1)
 
-			// update commitIndex, but first check if the node is still a leader (done outside of the loop)
-			if rf.leaderCtx.Err() != nil {
-				Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
-				return
-			}
-			rf.stateMutex.Lock()
-			lastCommitIndex := rf.commitIndex
-			Pf("[%d] leader commit index=%v, matchindex=%v, rf=%+v\n", rf.me, rf.commitIndex, rf.matchIndex, rf)
-			rf.commitIndex = findCommitIndex(rf.matchIndex, rf.log, rf.currentTerm, rf.commitIndex)
-			// one time may commit multiple entries
-			for idx := lastCommitIndex + 1; idx <= rf.commitIndex; idx++ {
-				rf.applyCh <- ApplyMsg{
-					CommandValid: true,
-					CommandIndex: idx,
-					Command:      rf.log[idx-1].Command,
-				}
-				Pf("[%d] leader committed index %d\n", rf.me, idx)
-			}
-			// not safe for holding a lock while sending msg on channel (possibly blocking!)
-			rf.stateMutex.Unlock()
+		go func(i int) {
+			defer wg.Done()
+			rf.replicateEntrySingle(i, ch)
+		}(i)
+	}
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	received := 0
+	// gather response, until majority of servers append entries successfully
+	for received < len(rf.peers)-1 {
+		_ = <-ch
+		received++
+
+		// update commitIndex, but first check if the node is still a leader (done outside of the loop)
+		if rf.leaderCtx.Err() != nil {
+			Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
+			return
 		}
+		rf.stateMutex.Lock()
+		lastCommitIndex := rf.commitIndex
+		Pf("[%d] leader commit index=%v, matchindex=%v, rf=%+v\n", rf.me, rf.commitIndex, rf.matchIndex, rf)
+		rf.commitIndex = findCommitIndex(rf.matchIndex, rf.log, rf.currentTerm, rf.commitIndex)
+		// one time may commit multiple entries
+		for idx := lastCommitIndex + 1; idx <= rf.commitIndex; idx++ {
+			rf.applyCh <- ApplyMsg{
+				CommandValid: true,
+				CommandIndex: idx,
+				Command:      rf.log[idx-1].Command,
+			}
+			Pf("[%d] leader committed index %d\n", rf.me, idx)
+		}
+		// not safe for holding a lock while sending msg on channel (possibly blocking!)
+		rf.stateMutex.Unlock()
 	}
 }
 

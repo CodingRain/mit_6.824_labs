@@ -111,7 +111,6 @@ func TestManyElections2A(t *testing.T) {
 		cfg.disconnect(i1)
 		cfg.disconnect(i2)
 		cfg.disconnect(i3)
-		fmt.Printf("Test (2A): multiple elections round %v, disconnect %v %v %v\n", ii, i1, i2, i3)
 
 		// either the current leader should still be alive,
 		// or the remaining four should elect a new one.
@@ -196,7 +195,6 @@ func TestFollowerFailure2B(t *testing.T) {
 	// disconnect one follower from the network.
 	leader1 := cfg.checkOneLeader()
 	cfg.disconnect((leader1 + 1) % servers)
-	fmt.Printf("disconnect %v\n", (leader1+1)%servers)
 
 	// the leader and remaining follower should be
 	// able to agree despite the disconnected follower.
