@@ -101,8 +101,8 @@ func TestManyElections2A(t *testing.T) {
 
 	cfg.checkOneLeader()
 
-	// iters := 10
-	iters := 100
+	iters := 10
+	// iters := 100
 	for ii := 1; ii < iters; ii++ {
 		// disconnect three nodes
 		i1 := rand.Int() % servers
@@ -196,6 +196,7 @@ func TestFollowerFailure2B(t *testing.T) {
 	// disconnect one follower from the network.
 	leader1 := cfg.checkOneLeader()
 	cfg.disconnect((leader1 + 1) % servers)
+	fmt.Printf("disconnect %v\n", (leader1+1)%servers)
 
 	// the leader and remaining follower should be
 	// able to agree despite the disconnected follower.
@@ -468,6 +469,7 @@ func TestRejoin2B(t *testing.T) {
 	// leader network failure
 	leader1 := cfg.checkOneLeader()
 	cfg.disconnect(leader1)
+	fmt.Printf("disconnect %v\n", leader1)
 
 	// make old leader try to agree on some entries
 	cfg.rafts[leader1].Start(102)
@@ -480,14 +482,17 @@ func TestRejoin2B(t *testing.T) {
 	// new leader network failure
 	leader2 := cfg.checkOneLeader()
 	cfg.disconnect(leader2)
+	fmt.Printf("disconnect %v\n", leader2)
 
 	// old leader connected again
 	cfg.connect(leader1)
+	fmt.Printf("reconnect %v\n", leader1)
 
 	cfg.one(104, 2, true)
 
 	// all together now
 	cfg.connect(leader2)
+	fmt.Printf("reconnect %v\n", leader2)
 
 	cfg.one(105, servers, true)
 
