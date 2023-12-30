@@ -189,6 +189,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// 2. change to follower if candidate's term > currentTerm (not necessarily grant vote)
 	if args.Term > rf.currentTerm {
 		rf.stateMutex.Unlock()
+		if rf.leaderCancelFunc != nil {
+			rf.leaderCancelFunc()
+		}
 		rf.stateChangeToFollower <- args.Term
 		rf.stateMutex.Lock()
 	}
@@ -640,8 +643,8 @@ loop:
 					// CHANGE STATE: leader -> follower
 					Pf("[%d]leader's term is stale, change to follower\n", rf.me)
 					rf.stateMutex.Lock()
-					rf.state = STATE_FOLLOWER
 					rf.leaderCancelFunc()
+					rf.state = STATE_FOLLOWER
 					rf.currentTerm = reply.Term
 					rf.votedFor = -1
 					rf.stateMutex.Unlock()
@@ -652,8 +655,6 @@ loop:
 				// Pf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
 				rf.stateMutex.Lock()
 				rf.state = STATE_FOLLOWER
-				// may be not necessary
-				rf.leaderCancelFunc()
 				rf.currentTerm = newTerm
 				rf.votedFor = -1
 				rf.stateMutex.Unlock()
