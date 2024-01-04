@@ -10,7 +10,7 @@ num_runs=100
 for i in $(seq 1 $num_runs)
 do
     # Run the test and capture the output
-    output=$(go test -run TestRejoin2B)
+    output=$(go test -run=TestUnreliableAgree2C)
 
     # Check if the test passed or failed
     if [[ $output == *"PASS"* ]]; then

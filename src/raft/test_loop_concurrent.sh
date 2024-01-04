@@ -14,7 +14,7 @@ for i in $(seq 1 $num_runs)
 do
     # Run the test in a background process
     ( 
-        output=$(go test -run TestRejoin2B)
+        output=$(go test -run TestPersist12C)
 
         # Check if the test passed or failed
         if [[ $output == *"PASS"* ]]; then

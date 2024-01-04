@@ -19,7 +19,9 @@ package raft
 
 import (
 	//  "bytes"
+	"bytes"
 	"context"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"os"
@@ -29,6 +31,7 @@ import (
 	"time"
 
 	//  "6.5840/labgob"
+	"6.5840/labgob"
 	"6.5840/labrpc"
 )
 
@@ -66,6 +69,13 @@ type LogEntry struct {
 	Command interface{}
 }
 
+type RaftPersistentState struct {
+	currentTerm int        // latest term server has seen (initialized to 0 on first boot, increases monotonically)
+	votedFor    int        // candidateId that received vote in current term (or null if none)
+	log         []LogEntry // log entries; each entry contains command for state machine, and term when entry was received by leader (first index is 1)
+	state       State      // TODO: paper do not mention this, is it necessary or not?
+}
+
 // A Go object implementing a single Raft peer.
 type Raft struct {
 	mu        sync.Mutex          // Lock to protect shared access to this peer's state
@@ -79,18 +89,18 @@ type Raft struct {
 	// state a Raft server must maintain.
 
 	// persistent state on all servers
-	currentTerm int        // latest term server has seen (initialized to 0 on first boot, increases monotonically)
-	votedFor    int        // candidateId that received vote in current term (or null if none)
-	log         []LogEntry // log entries; each entry contains command for state machine, and term when entry was received by leader (first index is 1)
+	RaftPersistentState
 
 	// volatile state on all servers
 	commitIndex           int      // index of highest log entry known to be committed
 	lastApplied           int      // index of highest log entry applied to state machine
-	state                 State    // TODO: paper do not mention this, is it necessary or not?
 	stateChangeToFollower chan int // channel contains term when follower state is changed to follower
 	stateMutex            sync.Mutex
+	replicationMutexes    []sync.Mutex
 	leaderCtx             context.Context
 	leaderCancelFunc      context.CancelFunc
+	stopCtx               context.Context
+	stopFunc              context.CancelFunc
 
 	// volatile state on leaders (reinitialized after election)
 	nextIndex  []int // for each server, index of the next log entry to send to that server
@@ -115,35 +125,49 @@ func (rf *Raft) GetState() (int, bool) {
 // second argument to persister.Save().
 // after you've implemented snapshots, pass the current snapshot
 // (or nil if there's not yet a snapshot).
+// TODO should be called with a lock?
 func (rf *Raft) persist() {
 	// Your code here (2C).
 	// Example:
-	// w := new(bytes.Buffer)
-	// e := labgob.NewEncoder(w)
-	// e.Encode(rf.xxx)
-	// e.Encode(rf.yyy)
-	// raftstate := w.Bytes()
-	// rf.persister.Save(raftstate, nil)
+	w := new(bytes.Buffer)
+	e := labgob.NewEncoder(w)
+	e.Encode(rf.currentTerm)
+	e.Encode(rf.votedFor)
+	e.Encode(rf.state)
+	e.Encode(rf.log)
+	raftstate := w.Bytes()
+	rf.persister.Save(raftstate, nil)
 }
 
 // restore previously persisted state.
 func (rf *Raft) readPersist(data []byte) {
 	if data == nil || len(data) < 1 { // bootstrap without any state?
+		rf.currentTerm = 0
+		rf.votedFor = -1
+		rf.state = STATE_FOLLOWER
+		rf.log = make([]LogEntry, 0)
 		return
 	}
-	// Your code here (2C).
+	// Your code he re (2C).
 	// Example:
-	// r := bytes.NewBuffer(data)
-	// d := labgob.NewDecoder(r)
-	// var xxx
-	// var yyy
-	// if d.Decode(&xxx) != nil ||
-	//    d.Decode(&yyy) != nil {
-	//   error...
-	// } else {
-	//   rf.xxx = xxx
-	//   rf.yyy = yyy
-	// }
+	r := bytes.NewBuffer(data)
+	d := labgob.NewDecoder(r)
+	var currentTerm int
+	var votedFor int
+	var state State
+	var log []LogEntry
+	if d.Decode(&currentTerm) != nil ||
+		d.Decode(&votedFor) != nil ||
+		d.Decode(&state) != nil ||
+		d.Decode(&log) != nil {
+		Pf("[%d]readPersist error\n", rf.me)
+		os.Exit(1)
+	} else {
+		rf.currentTerm = currentTerm
+		rf.votedFor = votedFor
+		rf.state = state
+		rf.log = log
+	}
 }
 
 // the service says it has created a snapshot that has
@@ -206,7 +230,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	} else {
 		lastLog = nil
 	}
-	logUpToDate := lastLog == nil || args.LastLogTerm > lastLog.Term || (args.LastLogTerm == lastLog.Term && args.LastLogIndex >= len(rf.log)-1)
+	logUpToDate := lastLog == nil || args.LastLogTerm > lastLog.Term || (args.LastLogTerm == lastLog.Term && args.LastLogIndex >= len(rf.log))
 	voteDecision := logUpToDate
 	if args.Term == rf.currentTerm {
 		voteDecision = voteDecision && (rf.votedFor == -1 || rf.votedFor == args.CandidateId)
@@ -214,6 +238,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 
 	if voteDecision {
 		rf.votedFor = args.CandidateId
+		rf.persist()
 		rf.stateMutex.Unlock()
 		reply.VoteGranted = true
 	} else {
@@ -250,7 +275,10 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 // that the caller passes the address of the reply struct with &, not
 // the struct itself.
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
-	// do this have tiemout?
+	// now := time.Now()
+	// defer func() {
+	// 	Pf("[%d]RequestVote to %d takes %v ms\n", rf.me, server, time.Since(now).Milliseconds())
+	// }()
 	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
 	return ok
 }
@@ -267,9 +295,17 @@ type AppendEntriesArgs struct {
 type AppendEntriesReply struct {
 	Term    int  // currentTerm, for leader to update itself
 	Success bool // true if follower contained entry matching prevLogIndex and prevLogTerm
+	// following fields are for log catchup optimization
+	XTerm  int // term of conflicting entry (if any)
+	XIndex int // first index it stores for term XTerm (if any)
+	XLen   int // log length
 }
 
 func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
+	// now := time.Now()
+	// defer func() {
+	// 	Pf("[%d]AppendEntries to %d takes %v ms\n", rf.me, server, time.Since(now).Milliseconds())
+	// }()
 	ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
 	return ok
 }
@@ -277,22 +313,25 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply) {
 	// what if args.term < rf.currentTerm?
 	// 1. Reply false if term < currentTerm (§5.1)
-	now := time.Now()
+	// now := time.Now()
 	defer func() {
+		rf.stateMutex.Lock()
 		Pf("[%d]log=%v\n", rf.me, rf.log)
-		Pf("[%d]AppendEntries Takes=%v ms\n", rf.me, time.Since(now).Milliseconds())
+		rf.stateMutex.Unlock()
+		// Pf("[%d]AppendEntries Takes=%v ms\n", rf.me, time.Since(now).Milliseconds())
 	}()
 	rf.stateMutex.Lock()
-	currentTerm := rf.currentTerm
-	reply.Term = currentTerm
-	if args.Term < currentTerm {
+	reply.Term = rf.currentTerm
+	reply.XLen = len(rf.log)
+	if args.Term < rf.currentTerm {
 		// I think the semantic of "false" when using as heartbeat message is different from "false" when using as append entries message
 		reply.Success = false
 		rf.stateMutex.Unlock()
 		return
 	}
+	needPersist := rf.currentTerm != args.Term || rf.votedFor != args.LeaderId
 	rf.currentTerm = args.Term
-	rf.votedFor = -1
+	rf.votedFor = args.LeaderId
 	if rf.leaderCancelFunc != nil {
 		rf.leaderCancelFunc()
 	}
@@ -306,7 +345,21 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// CONSISTENCY CHECK, need to be done BOTH for heartbeat message and append entries message!!
 	rf.stateMutex.Lock()
 	if args.PrevLogIndex > 0 && (args.PrevLogIndex > len(rf.log) || args.PrevLogTerm != rf.log[args.PrevLogIndex-1].Term) {
+		// optimized log catchup
+		if args.PrevLogIndex-1 < len(rf.log) {
+			reply.XTerm = rf.log[args.PrevLogIndex-1].Term
+			for i := args.PrevLogIndex - 1; i >= 0; i-- {
+				if rf.log[i].Term == reply.XTerm {
+					reply.XIndex = i + 1
+				} else {
+					break
+				}
+			}
+		}
 		reply.Success = false
+		if needPersist {
+			rf.persist()
+		}
 		rf.stateMutex.Unlock()
 		return
 	}
@@ -319,6 +372,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 
 		// 4. Append any new entries not already in the log
 		rf.log = append(rf.log, args.Entries...)
+		needPersist = true
 	}
 
 	// 5. If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)
@@ -334,8 +388,11 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 				CommandIndex: idx,
 				Command:      rf.log[idx-1].Command,
 			}
-			Pf("[%d]follower committed index %d, args=%+v, rf=%+v\n", rf.me, idx, args, rf)
+			Pf("[%d]follower committed index %d, command=%v, args=%+v\n", rf.me, idx, rf.log[idx-1].Command, args)
 		}
+	}
+	if needPersist {
+		rf.persist()
 	}
 	rf.stateMutex.Unlock()
 	reply.Success = true
@@ -347,6 +404,14 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func generateRandomHexStr(length int) (string, error) {
+	bytes := make([]byte, length/2)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
 
 // the service using Raft (e.g. a k/v server) wants to start
@@ -374,6 +439,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// 2. if leader, append command to log, then send AppendEntries RPCs to all other servers in a seperate goroutine
 	Pf("[%d]leader append command %v, nextIndex=%v\n", rf.me, command, rf.nextIndex)
 	rf.log = append(rf.log, LogEntry{rf.currentTerm, command})
+	rf.persist()
 	rf.matchIndex[rf.me] = len(rf.log)
 	rf.lastApplied = len(rf.log) - 1
 	index := len(rf.log)
@@ -385,11 +451,13 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 
 func (rf *Raft) replicateEntry(command interface{}) {
 	defer func() {
+		rf.stateMutex.Lock()
 		Pf("[%d]log=%v\n", rf.me, rf.log)
+		rf.stateMutex.Unlock()
 	}()
 
 	var wg sync.WaitGroup
-	ch := make(chan AppendEntriesReply)
+	ch := make(chan interface{})
 	for i := 0; i < len(rf.peers); i++ {
 		if i == rf.me {
 			continue
@@ -398,7 +466,13 @@ func (rf *Raft) replicateEntry(command interface{}) {
 
 		go func(i int) {
 			defer wg.Done()
-			rf.replicateEntrySingle(i, ch)
+			threadname, _ := generateRandomHexStr(10)
+			// Pf("[%d][%s]try to get replicationMutexes lock %d\n", rf.me, threadname, i)
+			rf.replicationMutexes[i].Lock()
+			// Pf("[%d][%s]try to get replicationMutexes lock %d ok\n", rf.me, threadname, i)
+			rf.replicateEntrySingle(i, threadname)
+			rf.replicationMutexes[i].Unlock()
+			ch <- nil
 		}(i)
 	}
 	go func() {
@@ -408,45 +482,47 @@ func (rf *Raft) replicateEntry(command interface{}) {
 	received := 0
 	// gather response, until majority of servers append entries successfully
 	for received < len(rf.peers)-1 {
-		_ = <-ch
-		received++
-
-		// update commitIndex, but first check if the node is still a leader (done outside of the loop)
-		if rf.leaderCtx.Err() != nil {
-			Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
+		select {
+		case <-ch:
+			received++
+			// update commitIndex, but first check if the node is still a leader (done outside of the loop)
+			rf.stateMutex.Lock()
+			if rf.leaderCtx.Err() != nil {
+				Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
+				rf.stateMutex.Unlock()
+				return
+			}
+			lastCommitIndex := rf.commitIndex
+			// Pf("[%d]leader commit index=%v, matchindex=%v, rf=%+v\n", rf.me, rf.commitIndex, rf.matchIndex, rf)
+			rf.commitIndex = findCommitIndex(rf.matchIndex, rf.log, rf.currentTerm, rf.commitIndex)
+			// one time may commit multiple entries
+			for idx := lastCommitIndex + 1; idx <= rf.commitIndex; idx++ {
+				rf.applyCh <- ApplyMsg{
+					CommandValid: true,
+					CommandIndex: idx,
+					Command:      rf.log[idx-1].Command,
+				}
+				Pf("[%d]leader committed index %d, command=%v\n", rf.me, idx, rf.log[idx-1].Command)
+			}
+			// not safe for holding a lock while sending msg on channel (possibly blocking!)
+			rf.stateMutex.Unlock()
+		case <-rf.leaderCtx.Done():
+			Pf("[%d]Replication(main): state is not leader anymore, return\n", rf.me)
+			return
+		case <-rf.stopCtx.Done():
+			Pf("[%d]Replication(main): destory\n", rf.me)
 			return
 		}
-		rf.stateMutex.Lock()
-		lastCommitIndex := rf.commitIndex
-		Pf("[%d] leader commit index=%v, matchindex=%v, rf=%+v\n", rf.me, rf.commitIndex, rf.matchIndex, rf)
-		rf.commitIndex = findCommitIndex(rf.matchIndex, rf.log, rf.currentTerm, rf.commitIndex)
-		// one time may commit multiple entries
-		for idx := lastCommitIndex + 1; idx <= rf.commitIndex; idx++ {
-			rf.applyCh <- ApplyMsg{
-				CommandValid: true,
-				CommandIndex: idx,
-				Command:      rf.log[idx-1].Command,
-			}
-			Pf("[%d] leader committed index %d\n", rf.me, idx)
-		}
-		// not safe for holding a lock while sending msg on channel (possibly blocking!)
-		rf.stateMutex.Unlock()
+
 	}
 }
 
-func (rf *Raft) replicateEntrySingle(i int, ch chan AppendEntriesReply) {
-	var args AppendEntriesArgs
+func (rf *Raft) replicateEntrySingle(i int, threadname string) {
 	rf.stateMutex.Lock()
+	var args AppendEntriesArgs
 	currentTerm := rf.currentTerm
 	args.Term = currentTerm
 	args.LeaderId = rf.me
-	args.PrevLogIndex = rf.nextIndex[i] - 1
-	if args.PrevLogIndex > 0 {
-		args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
-	} else {
-		args.PrevLogTerm = 0
-	}
-	args.Entries = rf.log[rf.nextIndex[i]-1:]
 	args.LeaderCommit = rf.commitIndex
 	rf.stateMutex.Unlock()
 
@@ -454,18 +530,40 @@ func (rf *Raft) replicateEntrySingle(i int, ch chan AppendEntriesReply) {
 	ok := false
 	// infiinte loop, mentioned by paper
 	// TODO: will this cause problme in a real system?
-	for !ok {
-		// Pf("[%d] Replication1: sendAppendEntries to %d, req=%+v\n", rf.me, i, args)
-		if rf.leaderCtx.Err() != nil {
-			Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
+	retryTime := 10
+	for retryTime > 0 && !rf.killed() {
+		rf.stateMutex.Lock()
+		// this check must be placed ahead, or rf.log could be changed by leader's AppendEntries RPC
+		if rf.leaderCtx.Err() != nil || rf.killed() {
+			Pf("[%d] Replication: state is not leader anymore or destroyed, return\n", rf.me)
+			rf.stateMutex.Unlock()
 			return
 		}
+		args.PrevLogIndex = rf.nextIndex[i] - 1
+		if args.PrevLogIndex > 0 {
+			args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
+		} else {
+			args.PrevLogTerm = 0
+		}
+		args.Entries = rf.log[rf.nextIndex[i]-1:]
+		currentLogLen := len(rf.log)
+		rf.stateMutex.Unlock()
+		Pf("[%d][%s] Replication1: send AppendEntries to %d, req=%+v\n", rf.me, threadname, i, args)
 		ok = rf.sendAppendEntries(i, &args, &reply)
-		// Pf("[%d] Replication1: sendAppendEntries to %d ok, req=%+v, reply=%+v\n", rf.me, i, args, reply)
-	}
+		Pf("[%d][%s] Replication1: send AppendEntries to %d ok, ok=%v, req=%+v, reply=%+v\n", rf.me, threadname, i, ok, args, reply)
+		if !ok {
+			retryTime--
+			continue
+		}
 
-	// If AppendEntries fails because of log inconsistency: decrement nextIndex and retry (§5.3)
-	for !reply.Success {
+		if reply.Success {
+			rf.stateMutex.Lock()
+			rf.nextIndex[i] = currentLogLen + 1
+			rf.matchIndex[i] = currentLogLen
+			rf.stateMutex.Unlock()
+			return
+		}
+
 		if reply.Term > currentTerm {
 			Pf("[%d] Replication: find higher term: %v from [%v], self term is %v\n, change to follower, cancelfunc=%v\n", rf.me, reply.Term, i, currentTerm, rf.leaderCancelFunc == nil)
 			rf.leaderCancelFunc()
@@ -473,40 +571,36 @@ func (rf *Raft) replicateEntrySingle(i int, ch chan AppendEntriesReply) {
 			// In practice I should cancel all goroutines and rpc call, but this lab's rpc framework does not support context cancellation
 			return
 		}
+
 		rf.stateMutex.Lock()
-		rf.nextIndex[i]--
-		args.PrevLogIndex = rf.nextIndex[i] - 1
-		if args.PrevLogIndex > 0 {
-			args.PrevLogTerm = rf.log[args.PrevLogIndex-1].Term
+		if reply.XTerm > 0 {
+			foundXTerm := false
+			// optimization: binary search
+			for j := len(rf.log) - 1; j >= 0; j-- {
+				if rf.log[j].Term == reply.XTerm {
+					rf.nextIndex[i] = j + 1
+					foundXTerm = true
+				} else if rf.log[j].Term < reply.XTerm {
+					break
+				}
+			}
+			if !foundXTerm {
+				rf.nextIndex[i] = reply.XIndex
+			}
+
 		} else {
-			args.PrevLogTerm = 0
+			rf.nextIndex[i] = reply.XLen + 1
 		}
+		// Pf("[%d][%s] Replication: updated nextIndex[%d] = %d, log=%v\n", rf.me, threadname, i, rf.nextIndex[i], rf.log)
+
 		if rf.nextIndex[i] <= 0 {
-			Pf("[%d]pre panic nextindex[%d] <= 0\n", rf.me, i)
+			Pf("[%d][%s]pre panic nextindex[%d] <= 0\n", rf.me, threadname, i)
 			panic("nextIndex[i] <= 0")
 		}
-		args.Entries = rf.log[rf.nextIndex[i]-1:]
+		retryTime--
 		rf.stateMutex.Unlock()
-
-		// Pf("[%d] Replication2: sendAppendEntries to %d, req=%+v\n", rf.me, i, args)
-		if rf.leaderCtx.Err() != nil {
-			Pf("[%d] Replication: state is not leader anymore, return\n", rf.me)
-			return
-		}
-		ok := rf.sendAppendEntries(i, &args, &reply)
-		// Pf("[%d] Replication2: sendA/ppendEntries to %d ok, args=%+v, reply=%+v\n", rf.me, i, args, reply)
-		for !ok {
-			ok = rf.sendAppendEntries(i, &args, &reply)
-		}
 	}
 
-	// If successful AppendEntries RPC: update nextIndex and matchIndex for follower (§5.3)
-	// Pf("[%d] Replication: sendAppendEntries to %d ok, req=%+v, reply=%+v\n", rf.me, i, args, reply)
-	rf.stateMutex.Lock()
-	rf.nextIndex[i] = len(rf.log) + 1
-	rf.matchIndex[i] = len(rf.log)
-	rf.stateMutex.Unlock()
-	ch <- reply
 }
 
 func findCommitIndex(matchIndexes []int, log []LogEntry, currentTerm int, commitIndex int) int {
@@ -552,6 +646,7 @@ func findCommitIndex(matchIndexes []int, log []LogEntry, currentTerm int, commit
 // should call killed() to check whether it should stop.
 func (rf *Raft) Kill() {
 	atomic.StoreInt32(&rf.dead, 1)
+	rf.stopFunc()
 	// Your code here, if desired.
 }
 
@@ -614,9 +709,9 @@ loop:
 				args.PrevLogTerm = prevLogTerm
 				args.LeaderCommit = leaderCommit
 				var reply AppendEntriesReply
-				// Pf("[%d]is leader, try to send heartbeats to %d\n", rf.me, i)
-				rf.sendAppendEntries(i, &args, &reply)
-				// Pf("[%d]is leader, send heartbeats to %d ok %v\n", rf.me, i, time.Now().UnixMilli())
+				Pf("[%d]is leader, try to send heartbeats to %d %v\n", rf.me, i, time.Now().UnixMilli())
+				ok := rf.sendAppendEntries(i, &args, &reply)
+				Pf("[%d]is leader, send heartbeats to %d ok, ok=%v %v\n", rf.me, i, ok, time.Now().UnixMilli())
 				ch <- reply
 
 			}(i)
@@ -639,17 +734,19 @@ loop:
 				// leader must go ahead and send next round of heartbeats
 				// In real system, context should be used to cancel goroutines
 				// This lab's rpc framework does not support context cancellation
+				rf.stateMutex.Lock()
 				if reply.Term > rf.currentTerm {
 					// CHANGE STATE: leader -> follower
 					Pf("[%d]leader's term is stale, change to follower\n", rf.me)
-					rf.stateMutex.Lock()
 					rf.leaderCancelFunc()
 					rf.state = STATE_FOLLOWER
 					rf.currentTerm = reply.Term
 					rf.votedFor = -1
+					rf.persist()
 					rf.stateMutex.Unlock()
 					return
 				}
+				rf.stateMutex.Unlock()
 			case newTerm := <-rf.stateChangeToFollower:
 				// CHANGE STATE: leader -> follower
 				// Pf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
@@ -657,10 +754,14 @@ loop:
 				rf.state = STATE_FOLLOWER
 				rf.currentTerm = newTerm
 				rf.votedFor = -1
+				rf.persist()
 				rf.stateMutex.Unlock()
 				return
 			case <-timingCh:
 				continue loop
+			case <-rf.stopCtx.Done():
+				Pf("[%d]LeaderLoop: destory\n", rf.me)
+				return
 			}
 		}
 	}
@@ -671,7 +772,7 @@ func (rf *Raft) followerLoop() {
 	// 2. follower state: respond to RPCs from candidates and leaders, wait for election timeout
 loop:
 	for {
-		ms := 100 + (rand.Int63() % 300)
+		ms := 200 + (rand.Int63() % 300)
 		select {
 		case <-time.After(time.Duration(ms) * time.Millisecond):
 			// CHANGE STATE: follower -> candidate
@@ -679,15 +780,22 @@ loop:
 			rf.stateMutex.Lock()
 			rf.state = STATE_CANDIDATE
 			rf.votedFor = -1
+			rf.persist()
 			rf.stateMutex.Unlock()
 			break loop
 		case newTerm := <-rf.stateChangeToFollower:
 			// remain as a follower
 			rf.stateMutex.Lock()
-			rf.currentTerm = newTerm
-			rf.state = STATE_FOLLOWER
+			if rf.currentTerm != newTerm {
+				rf.currentTerm = newTerm
+				rf.votedFor = -1
+				rf.persist()
+			}
 			rf.stateMutex.Unlock()
 			// Pf("[%d]receive AppendEntries RPC from leader, reset election timeout\n", rf.me)
+		case <-rf.stopCtx.Done():
+			Pf("[%d]FollowerLoop: destory\n", rf.me)
+			return
 		}
 	}
 }
@@ -698,6 +806,13 @@ func (rf *Raft) candidateLoop() {
 loop:
 	for {
 		rf.stateMutex.Lock()
+		if rf.votedFor != rf.me && rf.votedFor != -1 {
+			// CHANGE STATE: candidate -> follower
+			rf.state = STATE_FOLLOWER
+			rf.persist()
+			rf.stateMutex.Unlock()
+			return
+		}
 		rf.currentTerm++
 		rf.votedFor = rf.me
 		currentTerm := rf.currentTerm
@@ -708,6 +823,7 @@ loop:
 		} else {
 			lastLogTerm = 0
 		}
+		rf.persist()
 		rf.stateMutex.Unlock()
 		var wg sync.WaitGroup
 		ch := make(chan RequestVoteReply, len(rf.peers)-1)
@@ -725,6 +841,7 @@ loop:
 				args.LastLogTerm = lastLogTerm
 				var reply RequestVoteReply
 				rf.sendRequestVote(i, &args, &reply)
+				Pf("[%d]candidate send RequestVote to %d ok, args=%+v, reply=%+v\n", rf.me, i, args, reply)
 				ch <- reply
 			}(i, lastLogIndex, lastLogTerm)
 		}
@@ -733,20 +850,21 @@ loop:
 			close(ch)
 		}()
 		votes := 1
-		ms := 100 + (rand.Int63() % 300)
+		ms := 200 + (rand.Int63() % 300)
 		received := 0
 		for received < len(rf.peers)-1 {
 			select {
 			// receive supporter
 			case reply := <-ch:
 				received++
+				rf.stateMutex.Lock()
 				if reply.Term > rf.currentTerm {
 					// CHANGE STATE: candidate -> follower
 					Pf("[%d]candidate's term is stale, change to follower\n", rf.me)
-					rf.stateMutex.Lock()
 					rf.state = STATE_FOLLOWER
 					rf.currentTerm = reply.Term
 					rf.votedFor = -1
+					rf.persist()
 					rf.stateMutex.Unlock()
 					return
 				} else if reply.VoteGranted {
@@ -754,7 +872,6 @@ loop:
 					if votes >= (len(rf.peers)+1)/2 {
 						// CHANGE STATE: candidate -> leader
 						Pf("[%d]win the election, get %d votes(including self), total %d peers, become leader\n", rf.me, votes, len(rf.peers))
-						rf.stateMutex.Lock()
 						rf.state = STATE_LEADER
 						rf.votedFor = -1
 						rf.nextIndex = make([]int, len(rf.peers))
@@ -768,10 +885,12 @@ loop:
 						}
 						rf.matchIndex = make([]int, len(rf.peers))
 						rf.leaderCtx, rf.leaderCancelFunc = context.WithCancel(context.Background())
+						rf.persist()
 						rf.stateMutex.Unlock()
 						return
 					}
 				}
+				rf.stateMutex.Unlock()
 			// receive other leader's authority
 			case newTerm := <-rf.stateChangeToFollower:
 				// CHANGE STATE: candidate -> follower
@@ -781,12 +900,16 @@ loop:
 				rf.state = STATE_FOLLOWER
 				rf.votedFor = -1
 				rf.currentTerm = newTerm
+				rf.persist()
 				rf.stateMutex.Unlock()
 				return
 			// election timeout, start election again
 			case <-time.After(time.Duration(ms) * time.Millisecond):
 				Pf("[%d]election timeout, start a new election\n", rf.me)
 				continue loop
+			case <-rf.stopCtx.Done():
+				Pf("[%d]CandidateLoop: destory\n", rf.me)
+				return
 			}
 		}
 		// election lose, sleep a while and begin next election
@@ -819,22 +942,26 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.me = me
 
 	// Your initialization code here (2A, 2B, 2C).
-	// TODO initialize all the fields
-	// TODO move persistant state to persister
-	rf.currentTerm = 0
-	rf.votedFor = -1
-	rf.state = STATE_FOLLOWER
-	rf.stateChangeToFollower = make(chan int)
-	// TODO read from persister
-	rf.log = make([]LogEntry, 0)
-	rf.commitIndex = 0 // this stupid variable is 1-indexed
-	rf.lastApplied = 0
-	rf.nextIndex = make([]int, len(peers))
-	rf.matchIndex = make([]int, len(peers))
-	rf.applyCh = applyCh
-
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
+	rf.stateChangeToFollower = make(chan int)
+	rf.commitIndex = 0 // this stupid variable is 1-indexed
+	rf.lastApplied = 0
+	rf.applyCh = applyCh
+	rf.replicationMutexes = make([]sync.Mutex, len(peers))
+	rf.stopCtx, rf.stopFunc = context.WithCancel(context.Background())
+	if rf.state == STATE_LEADER {
+		rf.nextIndex = make([]int, len(peers))
+		// nextIndex should be initialized to leader last log index + 1
+		for i := 0; i < len(peers); i++ {
+			if i == rf.me {
+				continue
+			}
+			rf.nextIndex[i] = len(rf.log) + 1
+		}
+		rf.matchIndex = make([]int, len(peers))
+		rf.leaderCtx, rf.leaderCancelFunc = context.WithCancel(context.Background())
+	}
 
 	// start ticker goroutine to start elections
 	go rf.ticker()
