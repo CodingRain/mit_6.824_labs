@@ -1125,10 +1125,12 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 
 		if disconnect {
 			cfg.disconnect(victim)
+			fmt.Printf("disconnect %v\n", victim)
 			cfg.one(rand.Int(), servers-1, true)
 		}
 		if crash {
 			cfg.crash1(victim)
+			fmt.Printf("crash %v\n", victim)
 			cfg.one(rand.Int(), servers-1, true)
 		}
 
@@ -1137,13 +1139,14 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 		for i := 0; i < nn; i++ {
 			cfg.rafts[sender].Start(rand.Int())
 		}
-
 		// let applier threads catch up with the Start()'s
 		if disconnect == false && crash == false {
 			// make sure all followers have caught up, so that
 			// an InstallSnapshot RPC isn't required for
 			// TestSnapshotBasic2D().
+			// fmt.Printf("start agreement\n")
 			cfg.one(rand.Int(), servers, true)
+			// fmt.Printf("end agreement\n")
 		} else {
 			cfg.one(rand.Int(), servers-1, true)
 		}
@@ -1155,12 +1158,14 @@ func snapcommon(t *testing.T, name string, disconnect bool, reliable bool, crash
 			// reconnect a follower, who maybe behind and
 			// needs to rceive a snapshot to catch up.
 			cfg.connect(victim)
+			fmt.Printf("reconnect %v\n", victim)
 			cfg.one(rand.Int(), servers, true)
 			leader1 = cfg.checkOneLeader()
 		}
 		if crash {
 			cfg.start1(victim, cfg.applierSnap)
 			cfg.connect(victim)
+			fmt.Printf("restart %v\n", victim)
 			cfg.one(rand.Int(), servers, true)
 			leader1 = cfg.checkOneLeader()
 		}
